@@ -345,3 +345,49 @@ SELECT
     END AS anomaly_type
 
 FROM vw_sales;
+
+
+DROP VIEW IF EXISTS vw_regional_overview;
+
+CREATE VIEW vw_regional_overview AS
+
+WITH customer_region AS (
+    SELECT
+        customer_state AS state,
+        COUNT(DISTINCT customer_unique_id) AS total_customers
+    FROM vw_sales
+    WHERE customer_state IS NOT NULL
+    GROUP BY customer_state
+),
+
+seller_region AS (
+    SELECT
+        seller_state AS state,
+        COUNT(DISTINCT seller_id) AS total_sellers
+    FROM vw_sales
+    WHERE seller_state IS NOT NULL
+    GROUP BY seller_state
+),
+
+revenue_region AS (
+    SELECT
+        customer_state AS state,
+        SUM(price) AS total_revenue
+    FROM vw_sales
+    WHERE customer_state IS NOT NULL
+    GROUP BY customer_state
+)
+
+SELECT
+    COALESCE(c.state, s.state, r.state) AS state,
+    COALESCE(c.total_customers, 0) AS total_customers,
+    COALESCE(s.total_sellers, 0) AS total_sellers,
+    COALESCE(r.total_revenue, 0) AS total_revenue
+
+FROM customer_region c
+
+FULL OUTER JOIN seller_region s
+    ON c.state = s.state
+
+FULL OUTER JOIN revenue_region r
+    ON COALESCE(c.state, s.state) = r.state;
