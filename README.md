@@ -1,2 +1,1 @@
-# ai-retail-intelligence-platform
-End-to-end AI-powered retail analytics platform using PostgreSQL, Python, Power BI, Machine Learning, and fastAPI.
+End-to-end retail analytics on Brazilian e-commerce data — PostgreSQL + SQL analytical views, visualized through a 5-page interactive Power BI dashboard. ML-based customer segmentation planned.
